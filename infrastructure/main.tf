@@ -43,17 +43,17 @@ module "acr" {
   acr_optional_block = {}
 }
 
-module "aks_cluster" {
-  source = "./resources/applicational/kubernetes_cluster"
-  name = var.aks_cluster_name
-  location = module.rg.location
-  resource_group_name = module.rg.name
+# module "aks_cluster" {
+#   source = "./resources/applicational/kubernetes_cluster"
+#   name = var.aks_cluster_name
+#   location = module.rg.location
+#   resource_group_name = module.rg.name
 
-  node_pool_required_block = {}
+#   node_pool_required_block = {}
 
-  aks_optional = {
-    tags = local.tags
-  }
+#   aks_optional = {
+#     tags = local.tags
+#   }
   
-  aks_optional_blocks = {}
-}
+#   aks_optional_blocks = {}
+# }
