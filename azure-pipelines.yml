@@ -17,7 +17,7 @@ pr:
 trigger: none
 
 variables:
-  - group: WildCard-Infra-Artifacts
+  - group: WildCard-Infra-Variables
 
 jobs:
   - job: deploy_or_destroy
