@@ -33,10 +33,10 @@ jobs:
           echo "================= VARIABLES ================="
           echo "Action: ${{ parameters.action }}"
           echo "Service Connection: $(SERVICE_CONNECTION)"
-          echo "Terraform Resource Group: $(TF_RG)"
-          echo "Terraform Storage Account: $(TF_STA)"
-          echo "Terraform Container: $(TF_CONTAINER)"
-          echo "Terraform State Key: $(TF_STATE_KEY)"
+          # echo "Terraform Resource Group: $(TF_RG)"
+          # echo "Terraform Storage Account: $(TF_STA)"
+          # echo "Terraform Container: $(TF_CONTAINER)"
+          # echo "Terraform State Key: $(TF_STATE_KEY)"
           echo "Working Directory: $(Build.SourcesDirectory)/infrastructure"
           echo "============================================"
         displayName: 'Echo Pipeline Variables'
@@ -55,10 +55,10 @@ jobs:
           command: 'init'
           workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
           backendServiceArm: $(SERVICE_CONNECTION)
-          backendAzureRmResourceGroupName: $(TF_RG)
-          backendAzureRmStorageAccountName: $(TF_STA)
-          backendAzureRmContainerName: $(TF_CONTAINER)
-          backendAzureRmKey: $(TF_STATE_KEY)
+          # backendAzureRmResourceGroupName: $(TF_RG)
+          # backendAzureRmStorageAccountName: $(TF_STA)
+          # backendAzureRmContainerName: $(TF_CONTAINER)
+          # backendAzureRmKey: $(TF_STATE_KEY)
           allowTelemetryCollection: false
 
       # SECTION - Terraform Format
