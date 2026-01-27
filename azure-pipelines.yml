@@ -23,7 +23,7 @@ jobs:
 - job: deploy_or_destroy
   displayName: 'Deploy or Destroy IaC'
   pool:
-    vmImage: ubuntu-latest
+    vmImage: ubuntu-22.04
   steps:
   - checkout: self
     persistCredentials: true
