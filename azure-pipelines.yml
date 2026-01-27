@@ -89,12 +89,14 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        if [ -z "${{ parameters.taintResource }}" ]; then
+        if [ -z "${TAINT_RESOURCE}" ]; then
         echo "ERROR: taintResource parameter is empty."
-        exit 1
-        fi
+        else
         echo "Tainting resource: ${{ parameters.taintResource }}"
-        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint ${{ parameters.taintResource }}
+        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint ${TAINT_RESOURCE}
+        fi
+      env:
+        TAINT_RESOURCE: ${{ parameters.taintResource }}
 
   # ---------------------------------------------------
   # Terraform Format
