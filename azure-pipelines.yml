@@ -61,10 +61,10 @@ jobs:
       backendAzureRmKey: $(TF_STATE_KEY)
       allowTelemetryCollection: false
 
-# ====================================================
-# SECTION - Terraform Import Existing RG
-# ====================================================
-            - task: Bash@3
+  # ====================================================
+  # SECTION - Terraform Import Existing RG
+  # ====================================================
+  - task: Bash@3
     displayName: 'Terraform Import Existing Resource Group'
     inputs:
     targetType: 'inline'
