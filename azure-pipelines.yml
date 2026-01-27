@@ -64,11 +64,11 @@ jobs:
 # ====================================================
 # SECTION - Terraform Import Existing RG
 # ====================================================
-          - task: Bash@3
-    displayName: 'Terraform Import Existing Resource Group'
-    inputs:
-     targetType: 'inline'
-     script: |
+- task: Bash@3
+  displayName: 'Terraform Import Existing Resource Group'
+  inputs:
+    targetType: 'inline'
+    script: |
       echo "Checking if RG is already imported..."
       # Check if resource group already exists in Terraform state
       terraform -chdir=$(Build.SourcesDirectory)/infrastructure state list | grep module.rg.azurerm_resource_group.resource_group > /dev/null 2>&1
