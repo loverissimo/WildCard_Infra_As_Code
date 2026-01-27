@@ -110,10 +110,10 @@ jobs:
       command: 'apply'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: '' # <-- leave blank for manual approval
+      commandOptions: ''
 
   # ---------------------------------------------------
-  # Terraform Destroy (manual approval)
+  # Terraform Destroy
   # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Destroy'
@@ -123,4 +123,4 @@ jobs:
       command: 'destroy'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: '' # <-- leave blank for manual approval
+      commandOptions: ''
