@@ -32,7 +32,7 @@ jobs:
   - script: |
       echo "================= VARIABLES ================="
       echo "Action: ${{ parameters.action }}"
-      echo "Service Connection: SERVICE_CONNECTION)
+      echo "Service Connection: $(SERVICE_CONNECTION)"
       echo "Terraform Resource Group: $(TF_RG)"
       echo "Terraform Storage Account: $(TF_STA)"
       echo "Terraform Container: $(TF_CONTAINER)"
@@ -54,7 +54,7 @@ jobs:
       provider: 'azurerm'
       command: 'init'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      backendServiceArm: SERVICE_CONNECTION
+      backendServiceArm: $(SERVICE_CONNECTION)
       backendAzureRmResourceGroupName: $(TF_RG)
       backendAzureRmStorageAccountName: $(TF_STA)
       backendAzureRmContainerName: $(TF_CONTAINER)
@@ -76,7 +76,7 @@ jobs:
       provider: 'azurerm'
       command: 'validate'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: SERVICE_CONNECTION
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
   # SECTION - Terraform Plan
   - task: TerraformTaskV4@4
@@ -85,7 +85,7 @@ jobs:
       provider: 'azurerm'
       command: 'plan'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: SERVICE_CONNECTION
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
   # SECTION - Terraform Apply
   - task: TerraformTaskV4@4
@@ -95,7 +95,7 @@ jobs:
       provider: 'azurerm'
       command: 'apply'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: SERVICE_CONNECTION
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
       commandOptions: '-auto-approve'
 
   # SECTION - Terraform Destroy
