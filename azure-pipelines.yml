@@ -79,8 +79,7 @@ jobs:
         terraform -chdir=$(Build.SourcesDirectory)/infrastructure state list | grep module.rg.azurerm_resource_group.resource_group > /dev/null 2>&1
         if [ $? -ne 0 ]; then
           echo "Importing existing RG into Terraform state..."
-          terraform -chdir=$(Build.SourcesDirectory)/infrastructure import module.rg.azurerm_resource_group.resource_group /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<EXISTING_RG_NAME>
-        else
+          terraform -chdir=$(Build.SourcesDirectory)/infrastructure import module.rg.azurerm_resource_group.resource_group /subscriptions/d684986e-9ad3-4d0a-a267-cb448ffd6845/resourceGroups/rg-wc-weu
           echo "Resource group already imported, skipping..."
         fi
 
