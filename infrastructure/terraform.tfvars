@@ -1,5 +1,4 @@
 rg_name     = "rg-wc-weu"
-rg_location = "westeurope"
 
 vnet_name          = "vnet-wc-weu"
 vnet_address_space = ["10.10.0.0/24"]
