@@ -64,9 +64,9 @@ jobs:
 # ====================================================
 # SECTION - Terraform Import Existing RG
 # ====================================================
-- task: Bash@3
-  displayName: 'Terraform Import Existing Resource Group'
-  inputs:
+            - task: Bash@3
+    displayName: 'Terraform Import Existing Resource Group'
+    inputs:
     targetType: 'inline'
     script: |
       echo "Checking if RG is already imported..."
