@@ -28,7 +28,9 @@ jobs:
   - checkout: self
     persistCredentials: true
 
-  # SECTION - Echo variables
+  # ---------------------------------------------------
+  # Echo pipeline variables
+  # ---------------------------------------------------
   - script: |
       echo "================= VARIABLES ================="
       echo "Action: ${{ parameters.action }}"
@@ -41,13 +43,17 @@ jobs:
       echo "============================================"
     displayName: 'Echo Pipeline Variables'
 
-  # SECTION - Terraform CLI installation
+  # ---------------------------------------------------
+  # Install Terraform CLI
+  # ---------------------------------------------------
   - task: TerraformInstaller@1
     displayName: 'Install Terraform CLI'
     inputs:
       terraformVersion: 'latest'
 
-  # SECTION - Terraform Init
+  # ---------------------------------------------------
+  # Terraform Init
+  # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Init'
     inputs:
@@ -61,25 +67,26 @@ jobs:
       backendAzureRmKey: $(TF_STATE_KEY)
       allowTelemetryCollection: false
 
-  # ====================================================
-  # SECTION - Terraform Import Existing RG
-  # ====================================================
+  # ---------------------------------------------------
+  # Import existing RG into Terraform state if needed
+  # ---------------------------------------------------
   - task: Bash@3
     displayName: 'Terraform Import Existing Resource Group'
     inputs:
       targetType: 'inline'
       script: |
-        echo "Checking if RG is already imported..."
-        # Check if resource group already exists in Terraform state
+        echo "Checking if RG is already in Terraform state..."
         terraform -chdir=$(Build.SourcesDirectory)/infrastructure state list | grep module.rg.azurerm_resource_group.resource_group > /dev/null 2>&1
         if [ $? -ne 0 ]; then
-          echo "Importing existing resource group into Terraform state..."
-          terraform -chdir=$(Build.SourcesDirectory)/infrastructure import module.rg.azurerm_resource_group.resource_group /subscriptions/d684986e-9ad3-4d0a-a267-cb448ffd6845/resourceGroups/rg-wc-weu
+          echo "Importing existing RG into Terraform state..."
+          terraform -chdir=$(Build.SourcesDirectory)/infrastructure import module.rg.azurerm_resource_group.resource_group /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<EXISTING_RG_NAME>
         else
           echo "Resource group already imported, skipping..."
         fi
 
-  # SECTION - Terraform Format
+  # ---------------------------------------------------
+  # Terraform Format
+  # ---------------------------------------------------
   - task: Bash@3
     displayName: 'Terraform Format'
     inputs:
@@ -87,7 +94,9 @@ jobs:
       script: |
         terraform -chdir=$(Build.SourcesDirectory)/infrastructure fmt -recursive -diff
 
-  # SECTION - Terraform Validate
+  # ---------------------------------------------------
+  # Terraform Validate
+  # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Validate'
     inputs:
@@ -96,7 +105,9 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
-  # SECTION - Terraform Plan
+  # ---------------------------------------------------
+  # Terraform Plan
+  # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Plan'
     inputs:
@@ -105,7 +116,9 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
-  # SECTION - Terraform Apply
+  # ---------------------------------------------------
+  # Terraform Apply (manual approval)
+  # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Apply'
     condition: eq('${{ parameters.action }}', 'apply')
@@ -114,9 +127,11 @@ jobs:
       command: 'apply'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: '-auto-approve'
+      commandOptions: '' # <-- leave blank for manual approval
 
-  # SECTION - Terraform Destroy
+  # ---------------------------------------------------
+  # Terraform Destroy (manual approval)
+  # ---------------------------------------------------
   - task: TerraformTaskV4@4
     displayName: 'Terraform Destroy'
     condition: eq('${{ parameters.action }}', 'destroy')
@@ -125,4 +140,4 @@ jobs:
       command: 'destroy'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: '-auto-approve'
+      commandOptions: '' # <-- leave blank for manual approval
