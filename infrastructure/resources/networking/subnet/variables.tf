@@ -21,7 +21,6 @@ variable "address_prefixes" {
 variable "subnet_optional" {
   description = "Optional settings for the subnet"
   type = object({
-    private_endpoint_network_policies_enabled     = optional(bool)
     private_link_service_network_policies_enabled = optional(bool)
     service_endpoints                             = optional(list(string))
     service_endpoint_policy_ids                   = optional(list(string))

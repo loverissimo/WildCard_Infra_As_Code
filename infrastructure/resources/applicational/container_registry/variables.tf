@@ -53,13 +53,6 @@ variable "acr_optional_block" {
         subnet_id = string
       })))
     }) */
-    retention_policy = optional(object({
-      days    = optional(number)
-      enabled = optional(bool)
-    }))
-    trust_policy = optional(object({
-      enabled = optional(bool)
-    }))
     identity = optional(object({
       type         = string
       identity_ids = optional(list(string))

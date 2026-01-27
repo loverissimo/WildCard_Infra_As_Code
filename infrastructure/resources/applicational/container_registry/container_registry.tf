@@ -47,21 +47,6 @@ resource "azurerm_container_registry" "container_registry" {
     }
   } */
 
-  dynamic "retention_policy" {
-    for_each = var.acr_optional_block.retention_policy != null ? [1] : []
-    content {
-      days    = var.acr_optional_block.retention_policy.days
-      enabled = var.acr_optional_block.retention_policy.enabled
-    }
-
-  }
-  dynamic "trust_policy" {
-    for_each = var.acr_optional_block.trust_policy != null ? [1] : []
-    content {
-      enabled = var.acr_optional_block.trust_policy.enabled
-    }
-  }
-
   dynamic "identity" {
     for_each = var.acr_optional_block.identity != null ? [1] : []
     content {
