@@ -7,12 +7,12 @@ terraform {
     }
   }
 
-#   backend "azurerm" {
-#     resource_group_name  = "rg-chusp-dev-westeurope-001"
-#     storage_account_name = "tfstatechuspdev"
-#     container_name       = "tfstatedev"
-#     key                  = "terraform.tfstate"
-#   }
+  backend "azurerm" {
+    resource_group_name  = "rg-wc-weu"
+    storage_account_name = "sta-wc-weu"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
