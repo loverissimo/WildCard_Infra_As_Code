@@ -42,7 +42,7 @@ jobs:
         displayName: 'Echo Pipeline Variables'
 
       # SECTION - Terraform CLI installation
-      - task: TerraformInstaller@1
+      - task: TerraformInstaller@2
         displayName: 'Install Terraform CLI'
         inputs:
           terraformVersion: 'latest'
