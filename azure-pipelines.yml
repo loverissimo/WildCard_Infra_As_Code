@@ -9,18 +9,15 @@ parameters:
   - apply
   - destroy
 
-- name: taint
-  displayName: 'Taint a resource?'
-  type: string
-  default: 'no'
-  values:
-  - yes
-  - no
+- name: useVnet
+  displayName: 'VNet'
+  type: boolean
+  default: false
 
-- name: taintResource
-  displayName: 'Resource to taint'
-  type: string
-  default: ''
+- name: useACR
+  displayName: 'ACR'
+  type: boolean
+  default: false
 
 pr:
   branches:
@@ -34,9 +31,10 @@ variables:
 
 jobs:
 - job: deploy_or_destroy
-  displayName: 'Deploy or Destroy IaC'
+  displayName: 'Terraform IaC'
   pool:
     vmImage: ubuntu-22.04
+
   steps:
   - checkout: self
     persistCredentials: true
@@ -47,6 +45,8 @@ jobs:
   - script: |
       echo "================= VARIABLES ================="
       echo "Action: ${{ parameters.action }}"
+      echo "Selected VNet: ${{ parameters.useVnet }}"
+      echo "Selected ACR: ${{ parameters.useACR }}"
       echo "Service Connection: $(SERVICE_CONNECTION)"
       echo "Terraform Resource Group: $(TF_RG)"
       echo "Terraform Storage Account: $(TF_STA)"
@@ -78,23 +78,6 @@ jobs:
       backendAzureRmStorageAccountName: $(TF_STA)
       backendAzureRmContainerName: $(TF_CONTAINER)
       backendAzureRmKey: $(TF_STATE_KEY)
-      allowTelemetryCollection: false
-
-  # ---------------------------------------------------
-  # Terraform Taint
-  # ---------------------------------------------------
-  - task: Bash@3
-    displayName: 'Terraform Taint Resource'
-    condition: eq('${{ parameters.taint }}', 'yes')
-    inputs:
-      targetType: 'inline'
-      script: |
-        if [ -z "${{ parameters.taintResource }}" ]; then
-        echo "ERROR: taintResource parameter is empty."
-        exit 1
-        fi
-        echo "Tainting resource: ${{ parameters.taintResource }}"
-        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint ${{ parameters.taintResource }}
 
   # ---------------------------------------------------
   # Terraform Format
@@ -114,8 +97,38 @@ jobs:
     inputs:
       provider: 'azurerm'
       command: 'validate'
-      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
+      workingDirectory: $(Build.SourcesDirectory)/infrastructure
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+
+  # ---------------------------------------------------
+  # Set Terraform Target Modules
+  # ---------------------------------------------------
+  - script: |
+      TF_TARGETS=""
+
+       # Add VNet & Subnet modules if selected
+      if [ "${{ parameters.useVnet }}" = "True" ]; then
+        TF_TARGETS="-target=module.vnet -target=module.subnet"
+      fi
+
+       # Add ACR module if selected
+      if [ "${{ parameters.useACR }}" = "True" ]; then
+        if [ -z "$TF_TARGETS" ]; then
+          TF_TARGETS="-target=module.acr"
+        else
+          TF_TARGETS="$TF_TARGETS -target=module.acr"
+        fi
+      fi
+
+      # Debug output
+      if [ -z "$TF_TARGETS" ]; then
+        echo "No modules selected, Terraform will run on all resources."
+      else
+        echo "Terraform targets: $TF_TARGETS"
+      fi
+
+      echo "##vso[task.setvariable variable=TF_TARGETS]$TF_TARGETS"
+    displayName: 'Set Terraform Target Modules'
 
   # ---------------------------------------------------
   # Terraform Plan
@@ -127,6 +140,8 @@ jobs:
       command: 'plan'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+      allowTelemetryCollection: false
+      additionalArgs: '$(TF_TARGETS)'
 
   # ---------------------------------------------------
   # Terraform Apply
@@ -139,7 +154,8 @@ jobs:
       command: 'apply'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+      allowTelemetryCollection: false
+      commandOptions: '-auto-approve $(TF_TARGETS)'
 
   # ---------------------------------------------------
   # Terraform Destroy
@@ -152,4 +168,5 @@ jobs:
       command: 'destroy'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+      allowTelemetryCollection: false
+      commandOptions: '-auto-approve $(TF_TARGETS)'
