@@ -9,6 +9,11 @@ parameters:
   - apply
   - destroy
 
+- name: target
+  displayName: 'Target module/resource (optional)'
+  type: string
+  default: ' '
+
 pr:
   branches:
     include:
@@ -98,28 +103,42 @@ jobs:
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
 
-  # ---------------------------------------------------
-  # Terraform Apply
-  # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+# ---------------------------------------------------
+# Terraform Apply
+# ---------------------------------------------------
+  - task: Bash@3
     displayName: 'Terraform Apply'
     condition: eq('${{ parameters.action }}', 'apply')
     inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+     targetType: 'inline'
+     script: |
+      set -e
+      cd $(Build.SourcesDirectory)/infrastructure
 
-  # ---------------------------------------------------
-  # Terraform Destroy
-  # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+      if [ -n "${{ parameters.target }}" ]; then
+        echo "Applying only target: ${{ parameters.target }}"
+        terraform apply -auto-approve -target=${{ parameters.target }}
+      else
+        echo "Applying all resources"
+        terraform apply -auto-approve
+      fi
+
+# ---------------------------------------------------
+# Terraform Destroy
+# ---------------------------------------------------
+  - task: Bash@3
     displayName: 'Terraform Destroy'
     condition: eq('${{ parameters.action }}', 'destroy')
     inputs:
-      provider: 'azurerm'
-      command: 'destroy'
-      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+     targetType: 'inline'
+     script: |
+      set -e
+      cd $(Build.SourcesDirectory)/infrastructure
+
+      if [ -n "${{ parameters.target }}" ]; then
+        echo "Destroying only target: ${{ parameters.target }}"
+        terraform destroy -auto-approve -target=${{ parameters.target }}
+      else
+        echo "Destroying all resources"
+        terraform destroy -auto-approve
+      fi
