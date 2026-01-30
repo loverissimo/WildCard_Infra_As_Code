@@ -93,14 +93,13 @@ jobs:
       backendAzureRmStorageAccountName: $(TF_STA)
       backendAzureRmContainerName: $(TF_CONTAINER)
       backendAzureRmKey: $(TF_STATE_KEY)
-      allowTelemetryCollection: false
 
   # ---------------------------------------------------
   # Terraform Taint
   # ---------------------------------------------------
   - task: Bash@3
     displayName: 'Terraform Taint Resource'
-    condition: eq('${{ parameters.taint }}', 'yes')
+    condition: eq('${{ parameters.taint }}', true)
     inputs:
       targetType: 'inline'
       script: |
