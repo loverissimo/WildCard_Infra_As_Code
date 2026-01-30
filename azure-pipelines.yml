@@ -9,11 +9,6 @@ parameters:
   - apply
   - destroy
 
-- name: target
-  displayName: 'Target module or resource (optional)'
-  type: string
-  default: ''
-
 pr:
   branches:
     include:
@@ -29,29 +24,27 @@ jobs:
   displayName: 'Deploy or Destroy IaC'
   pool:
     vmImage: ubuntu-22.04
-
   steps:
   - checkout: self
     persistCredentials: true
 
   # ---------------------------------------------------
-  # Echo parameters
+  # Echo pipeline variables
   # ---------------------------------------------------
   - script: |
-      echo "================= PARAMETERS ================="
+      echo "================= VARIABLES ================="
       echo "Action: ${{ parameters.action }}"
-      echo "Target: ${{ parameters.target }}"
       echo "Service Connection: $(SERVICE_CONNECTION)"
-      echo "Terraform RG: $(TF_RG)"
+      echo "Terraform Resource Group: $(TF_RG)"
       echo "Terraform Storage Account: $(TF_STA)"
       echo "Terraform Container: $(TF_CONTAINER)"
       echo "Terraform State Key: $(TF_STATE_KEY)"
       echo "Working Directory: $(Build.SourcesDirectory)/infrastructure"
-      echo "=============================================="
-    displayName: 'Echo Parameters'
+      echo "============================================"
+    displayName: 'Echo Pipeline Variables'
 
   # ---------------------------------------------------
-  # Install Terraform
+  # Install Terraform CLI
   # ---------------------------------------------------
   - task: TerraformInstaller@1
     displayName: 'Install Terraform CLI'
@@ -108,37 +101,25 @@ jobs:
   # ---------------------------------------------------
   # Terraform Apply
   # ---------------------------------------------------
-  - task: Bash@3
+  - task: TerraformTaskV4@4
     displayName: 'Terraform Apply'
     condition: eq('${{ parameters.action }}', 'apply')
     inputs:
-      targetType: 'inline'
-      script: |
-        set -e
-        cd $(Build.SourcesDirectory)/infrastructure
-
-        if [ -n "${{ parameters.target }}" ]; then
-          echo "WARNING: Applying with target: ${{ parameters.target }}"
-          terraform apply -auto-approve -target=${{ parameters.target }}
-        else
-          terraform apply -auto-approve
-        fi
+      provider: 'azurerm'
+      command: 'apply'
+      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+      commandOptions: ''
 
   # ---------------------------------------------------
   # Terraform Destroy
   # ---------------------------------------------------
-  - task: Bash@3
+  - task: TerraformTaskV4@4
     displayName: 'Terraform Destroy'
     condition: eq('${{ parameters.action }}', 'destroy')
     inputs:
-      targetType: 'inline'
-      script: |
-        set -e
-        cd $(Build.SourcesDirectory)/infrastructure
-
-        if [ -n "${{ parameters.target }}" ]; then
-          echo "WARNING: Destroying with target: ${{ parameters.target }}"
-          terraform destroy -auto-approve -target=${{ parameters.target }}
-        else
-          terraform destroy -auto-approve
-        fi
+      provider: 'azurerm'
+      command: 'destroy'
+      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
+      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
+      commandOptions: ''
