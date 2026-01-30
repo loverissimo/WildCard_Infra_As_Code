@@ -140,13 +140,12 @@ jobs:
       command: 'plan'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      allowTelemetryCollection: false
       additionalArgs: '$(TF_TARGETS)'
 
   # ---------------------------------------------------
   # Terraform Apply
   # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+  - task: Bash@3
     displayName: 'Terraform Apply'
     condition: eq('${{ parameters.action }}', 'apply')
     inputs:
@@ -154,13 +153,12 @@ jobs:
       command: 'apply'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      allowTelemetryCollection: false
       commandOptions: '-auto-approve $(TF_TARGETS)'
 
   # ---------------------------------------------------
   # Terraform Destroy
   # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+  - task: Bash@3
     displayName: 'Terraform Destroy'
     condition: eq('${{ parameters.action }}', 'destroy')
     inputs:
@@ -168,5 +166,4 @@ jobs:
       command: 'destroy'
       workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
       environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      allowTelemetryCollection: false
       commandOptions: '-auto-approve $(TF_TARGETS)'
