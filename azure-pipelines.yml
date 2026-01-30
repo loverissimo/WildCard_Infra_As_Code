@@ -9,15 +9,10 @@ parameters:
   - apply
   - destroy
 
-- name: taint
-  displayName: 'Taint a resource?'
-  type: boolean
-  default: false
-
-- name: taintResource
-  displayName: 'Resource to taint (required if taint = yes)'
+- name: target
+  displayName: 'Target module or resource (optional)'
   type: string
-  default: example.resource.name
+  default: ''
 
 pr:
   branches:
@@ -40,39 +35,23 @@ jobs:
     persistCredentials: true
 
   # ---------------------------------------------------
-  # Echo pipeline variables
+  # Echo parameters
   # ---------------------------------------------------
   - script: |
-      echo "================= VARIABLES ================="
+      echo "================= PARAMETERS ================="
       echo "Action: ${{ parameters.action }}"
-      echo "Taint enabled: ${{ parameters.taint }}"
-      echo "Taint resource: ${{ parameters.taintResource }}"
+      echo "Target: ${{ parameters.target }}"
       echo "Service Connection: $(SERVICE_CONNECTION)"
-      echo "Terraform Resource Group: $(TF_RG)"
+      echo "Terraform RG: $(TF_RG)"
       echo "Terraform Storage Account: $(TF_STA)"
       echo "Terraform Container: $(TF_CONTAINER)"
       echo "Terraform State Key: $(TF_STATE_KEY)"
       echo "Working Directory: $(Build.SourcesDirectory)/infrastructure"
-      echo "============================================"
-    displayName: 'Echo Pipeline Variables'
+      echo "=============================================="
+    displayName: 'Echo Parameters'
 
   # ---------------------------------------------------
-  # Validate taint parameters (fail fast)
-  # ---------------------------------------------------
-  - task: Bash@3
-    displayName: 'Validate taint parameters'
-    condition: eq('${{ parameters.taint }}', 'yes')
-    inputs:
-      targetType: 'inline'
-      script: |
-        if [ -z "${{ parameters.taintResource }}" ]; then
-          echo "##vso[task.logissue type=error]"
-          echo "Parameter 'taintResource' must be provided when 'Taint a resource?' is set to 'yes'."
-          exit 1
-        fi
-
-  # ---------------------------------------------------
-  # Install Terraform CLI
+  # Install Terraform
   # ---------------------------------------------------
   - task: TerraformInstaller@1
     displayName: 'Install Terraform CLI'
@@ -93,18 +72,6 @@ jobs:
       backendAzureRmStorageAccountName: $(TF_STA)
       backendAzureRmContainerName: $(TF_CONTAINER)
       backendAzureRmKey: $(TF_STATE_KEY)
-
-  # ---------------------------------------------------
-  # Terraform Taint
-  # ---------------------------------------------------
-  - task: Bash@3
-    displayName: 'Terraform Taint Resource'
-    condition: eq('${{ parameters.taint }}', true)
-    inputs:
-      targetType: 'inline'
-      script: |
-        echo "Tainting resource: ${{ parameters.taintResource }}"
-        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint "${{ parameters.taintResource }}"
 
   # ---------------------------------------------------
   # Terraform Format
@@ -141,25 +108,37 @@ jobs:
   # ---------------------------------------------------
   # Terraform Apply
   # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+  - task: Bash@3
     displayName: 'Terraform Apply'
     condition: eq('${{ parameters.action }}', 'apply')
     inputs:
-      provider: 'azurerm'
-      command: 'apply'
-      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+      targetType: 'inline'
+      script: |
+        set -e
+        cd $(Build.SourcesDirectory)/infrastructure
+
+        if [ -n "${{ parameters.target }}" ]; then
+          echo "WARNING: Applying with target: ${{ parameters.target }}"
+          terraform apply -auto-approve -target=${{ parameters.target }}
+        else
+          terraform apply -auto-approve
+        fi
 
   # ---------------------------------------------------
   # Terraform Destroy
   # ---------------------------------------------------
-  - task: TerraformTaskV4@4
+  - task: Bash@3
     displayName: 'Terraform Destroy'
     condition: eq('${{ parameters.action }}', 'destroy')
     inputs:
-      provider: 'azurerm'
-      command: 'destroy'
-      workingDirectory: '$(Build.SourcesDirectory)/infrastructure'
-      environmentServiceNameAzureRM: $(SERVICE_CONNECTION)
-      commandOptions: ''
+      targetType: 'inline'
+      script: |
+        set -e
+        cd $(Build.SourcesDirectory)/infrastructure
+
+        if [ -n "${{ parameters.target }}" ]; then
+          echo "WARNING: Destroying with target: ${{ parameters.target }}"
+          terraform destroy -auto-approve -target=${{ parameters.target }}
+        else
+          terraform destroy -auto-approve
+        fi
