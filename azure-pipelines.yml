@@ -18,7 +18,7 @@ parameters:
   - no
 
 - name: taintResource
-  displayName: 'Resource to taint'
+  displayName: 'Resource to taint (required if taint = yes)'
   type: string
   default: ''
 
@@ -37,6 +37,7 @@ jobs:
   displayName: 'Deploy or Destroy IaC'
   pool:
     vmImage: ubuntu-22.04
+
   steps:
   - checkout: self
     persistCredentials: true
@@ -47,6 +48,8 @@ jobs:
   - script: |
       echo "================= VARIABLES ================="
       echo "Action: ${{ parameters.action }}"
+      echo "Taint enabled: ${{ parameters.taint }}"
+      echo "Taint resource: ${{ parameters.taintResource }}"
       echo "Service Connection: $(SERVICE_CONNECTION)"
       echo "Terraform Resource Group: $(TF_RG)"
       echo "Terraform Storage Account: $(TF_STA)"
@@ -55,6 +58,21 @@ jobs:
       echo "Working Directory: $(Build.SourcesDirectory)/infrastructure"
       echo "============================================"
     displayName: 'Echo Pipeline Variables'
+
+  # ---------------------------------------------------
+  # Validate taint parameters (fail fast)
+  # ---------------------------------------------------
+  - task: Bash@3
+    displayName: 'Validate taint parameters'
+    condition: eq('${{ parameters.taint }}', 'yes')
+    inputs:
+      targetType: 'inline'
+      script: |
+        if [ -z "${{ parameters.taintResource }}" ]; then
+          echo "##vso[task.logissue type=error]"
+          echo "Parameter 'taintResource' must be provided when 'Taint a resource?' is set to 'yes'."
+          exit 1
+        fi
 
   # ---------------------------------------------------
   # Install Terraform CLI
@@ -81,7 +99,7 @@ jobs:
       allowTelemetryCollection: false
 
   # ---------------------------------------------------
-  # Terraform Taint
+  # Terraform Taint (conditional)
   # ---------------------------------------------------
   - task: Bash@3
     displayName: 'Terraform Taint Resource'
@@ -89,12 +107,8 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        if [ -z "${{ parameters.taintResource }}" ]; then
-        echo "ERROR: taintResource parameter is empty."
-        exit 1
-        fi
         echo "Tainting resource: ${{ parameters.taintResource }}"
-        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint ${{ parameters.taintResource }}
+        terraform -chdir=$(Build.SourcesDirectory)/infrastructure taint "${{ parameters.taintResource }}"
 
   # ---------------------------------------------------
   # Terraform Format
