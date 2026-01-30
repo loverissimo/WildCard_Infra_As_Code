@@ -11,16 +11,13 @@ parameters:
 
 - name: taint
   displayName: 'Taint a resource?'
-  type: string
-  default: 'no'
-  values:
-  - yes
-  - no
+  type: boolean
+  default: false
 
 - name: taintResource
   displayName: 'Resource to taint (required if taint = yes)'
   type: string
-  default: ''
+  default: example.resource.name
 
 pr:
   branches:
@@ -99,7 +96,7 @@ jobs:
       allowTelemetryCollection: false
 
   # ---------------------------------------------------
-  # Terraform Taint (conditional)
+  # Terraform Taint
   # ---------------------------------------------------
   - task: Bash@3
     displayName: 'Terraform Taint Resource'
