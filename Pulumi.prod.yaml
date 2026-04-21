@@ -1,0 +1,2 @@
+config:
+  wildcard_infra_as_code:subscriptionId: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

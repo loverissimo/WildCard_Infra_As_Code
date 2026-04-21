@@ -1,0 +1,15 @@
+name: wildcard_infra_as_code
+description: WildCard AI platform infrastructure on Azure
+runtime:
+  name: nodejs
+  options:
+    typescript: true
+
+main: index.ts
+
+config:
+  wildcard_infra_as_code:project:
+    value: wildcard
+
+  wildcard_infra_as_code:location:
+    value: westeurope
