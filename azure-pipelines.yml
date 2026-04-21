@@ -11,6 +11,7 @@ parameters:
 
 variables:
   PULUMI_STACK: ${{ parameters.environment }}
+  PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
 stages:
 
@@ -22,6 +23,7 @@ stages:
   - job: install
     pool:
       vmImage: ubuntu-latest
+      
     steps:
     - task: NodeTool@0
       inputs:
@@ -49,6 +51,7 @@ stages:
     steps:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
+        export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
         pulumi stack select $PULUMI_STACK
 
@@ -76,6 +79,7 @@ stages:
           steps:
           - script: |
               export PATH=$PATH:$HOME/.pulumi/bin
+              export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
               pulumi stack select $PULUMI_STACK
               pulumi up --yes
