@@ -57,6 +57,8 @@ stages:
         export PATH=$PATH:$HOME/.pulumi/bin
         export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
+        cd $(Build.SourcesDirectory)
+
         pulumi stack select $PULUMI_STACK || pulumi stack init $PULUMI_STACK
 
         pulumi preview --diff --json > preview.json
@@ -85,6 +87,8 @@ stages:
           - script: |
               export PATH=$PATH:$HOME/.pulumi/bin
               export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
+
+              cd $(Build.SourcesDirectory)
 
               pulumi stack select $PULUMI_STACK || pulumi stack init $PULUMI_STACK
               pulumi up --yes
