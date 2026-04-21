@@ -33,10 +33,12 @@ stages:
     - script: |
         curl -fsSL https://get.pulumi.com | sh
         export PATH=$PATH:$HOME/.pulumi/bin
+        pulumi version
       displayName: Install Pulumi
 
     - script: |
         curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+        infracost --version
       displayName: Install Infracost
 
 
@@ -50,8 +52,10 @@ stages:
     pool:
       vmImage: ubuntu-latest
     steps:
+
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
+        export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
         pulumi stack select $PULUMI_STACK
 
@@ -73,12 +77,14 @@ stages:
   - deployment: pulumi_apply
     displayName: "Manual Apply"
     environment: ${{ parameters.environment }}
+
     strategy:
       runOnce:
         deploy:
           steps:
           - script: |
               export PATH=$PATH:$HOME/.pulumi/bin
+              export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
               pulumi stack select $PULUMI_STACK
               pulumi up --yes
