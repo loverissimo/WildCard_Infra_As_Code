@@ -10,8 +10,9 @@ parameters:
     - prod
 
 variables:
-  PULUMI_STACK: ${{ parameters.environment }}
-  PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+- group: WildCard-Infra-Variables
+- name: PULUMI_STACK
+  value: ${{ parameters.environment }}
 
 stages:
 
@@ -51,7 +52,6 @@ stages:
     steps:
     - script: |
         export PATH=$PATH:$HOME/.pulumi/bin
-        export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
         pulumi stack select $PULUMI_STACK
 
@@ -79,7 +79,6 @@ stages:
           steps:
           - script: |
               export PATH=$PATH:$HOME/.pulumi/bin
-              export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
               pulumi stack select $PULUMI_STACK
               pulumi up --yes
