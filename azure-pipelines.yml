@@ -24,11 +24,17 @@ stages:
   - job: install
     pool:
       vmImage: ubuntu-latest
+      
     steps:
-
     - task: NodeTool@0
       inputs:
         versionSpec: "20.x"
+
+    - script: |
+        curl -fsSL https://get.pulumi.com | sh
+        export PATH=$PATH:$HOME/.pulumi/bin
+        pulumi version
+      displayName: Install Pulumi
 
     - script: |
         curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
@@ -47,14 +53,16 @@ stages:
       vmImage: ubuntu-latest
     steps:
 
-    - task: Pulumi@0
+    - script: |
+        export PATH=$PATH:$HOME/.pulumi/bin
+        export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
+
+        cd $(Build.SourcesDirectory)
+
+        pulumi stack select $PULUMI_STACK || pulumi stack init $PULUMI_STACK
+
+        pulumi preview --diff --json > preview.json
       displayName: Pulumi Preview
-      inputs:
-        command: preview
-        stack: $(PULUMI_STACK)
-        args: --diff --json > preview.json
-      env:
-        PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
 
     - script: |
         infracost breakdown --path preview.json
@@ -76,12 +84,12 @@ stages:
       runOnce:
         deploy:
           steps:
+          - script: |
+              export PATH=$PATH:$HOME/.pulumi/bin
+              export PULUMI_ACCESS_TOKEN=$(PULUMI_ACCESS_TOKEN)
 
-          - task: Pulumi@0
+              cd $(Build.SourcesDirectory)
+
+              pulumi stack select $PULUMI_STACK || pulumi stack init $PULUMI_STACK
+              pulumi up --yes
             displayName: Pulumi Up
-            inputs:
-              command: up
-              stack: $(PULUMI_STACK)
-              args: --yes
-            env:
-              PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
