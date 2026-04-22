@@ -14,7 +14,7 @@ on:
 
 jobs:
   preview:
-    name: Pulumi Preview + Cost Estimate
+    name: Pulumi Preview
     runs-on: ubuntu-latest
 
     steps:

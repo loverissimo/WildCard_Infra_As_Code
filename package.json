@@ -1,0 +1,31 @@
+{
+  "name": "wildcard_infra_as_code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "pulumi up"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loverissimo/WildCard_Infra_As_Code.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/loverissimo/WildCard_Infra_As_Code/issues"
+  },
+  "homepage": "https://github.com/loverissimo/WildCard_Infra_As_Code#readme",
+  "dependencies": {
+    "@pulumi/azure-native": "^3.17.0",
+    "@pulumi/pulumi": "^3.231.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
