@@ -10,17 +10,23 @@ export function createACR(
     sku: azure.containerregistry.SkuName = "Basic", 
     extraTags?: Record<string, string>
 ): azure.containerregistry.Registry {
-  return createResource("acr", id, (name) => {
-    return new azure.containerregistry.Registry(name, {
-      registryName: name,
-      resourceGroupName: rg.name,
-      location: config.location,
+  const name = acrName(id);
 
-      sku: { name: sku },
-      
-      tags: getTags(extraTags),
-    });
+  return new azure.containerregistry.Registry(name, {
+    registryName: name,
+    resourceGroupName: rg.name,
+    location: config.location,
+
+    sku: { name: sku },
+    tags: getTags(extraTags),
   });
+}
+
+export function acrName(uniqueId: string): string {
+  return `${uniqueId}${config.projectName}${config.environment}${config.location}`
+    .replace(/[^a-zA-Z0-9]/g, "") // remove invalid chars
+    .toLowerCase()
+    .slice(0, 50); // ACR name max length is 50 chars
 }
 
 export function grantAcrPullToAks(
