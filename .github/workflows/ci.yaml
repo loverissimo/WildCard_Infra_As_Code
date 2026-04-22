@@ -42,6 +42,8 @@ jobs:
       - name: Select Pulumi Stack
         run: |
           pulumi stack select ${{ github.event.inputs.environment }} || pulumi stack init ${{ github.event.inputs.environment }}
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Pulumi Install Dependencies
         run: npm install
@@ -90,6 +92,8 @@ jobs:
 
       - name: Select Stack
         run: pulumi stack select ${{ github.event.inputs.environment }}
+        env:
+         PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
 
       - name: Pulumi Up (DEPLOY)
         run: pulumi up --yes
