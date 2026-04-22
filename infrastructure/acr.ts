@@ -23,7 +23,7 @@ export function createACR(
 }
 
 export function acrName(uniqueId: string): string {
-  return `${uniqueId}${config.projectName}${config.environment}${config.location}`
+  return `acr${uniqueId}${config.projectName}${config.environment}${config.location}`
     .replace(/[^a-zA-Z0-9]/g, "") // remove invalid chars
     .toLowerCase()
     .slice(0, 50); // ACR name max length is 50 chars
