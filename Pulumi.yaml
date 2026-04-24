@@ -13,3 +13,6 @@ config:
 
   wildcard_infra_as_code:location:
     value: westeurope
+
+  wildcard_infra_as_code:location_short:
+    value: weu

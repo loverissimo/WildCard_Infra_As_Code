@@ -13,7 +13,7 @@ export function createAKS(
   const cluster = createResource("aks", id, (name) => {
     return new azure.containerservice.ManagedCluster(name, {
       resourceGroupName: rg.name,
-      location: config.location,
+      location: config.locationShort,
 
       dnsPrefix: `${name}-dns`,
       kubernetesVersion: policy.k8sVersion,

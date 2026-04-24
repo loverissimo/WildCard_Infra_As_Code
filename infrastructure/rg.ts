@@ -11,7 +11,7 @@ export function createResourceGroup(
   return createResource("rg", id, (name) => {
     return new azure.resources.ResourceGroup(name, {
       resourceGroupName: name,
-      location: config.location,
+      location: config.locationShort,
       tags: getTags(extraTags),
     });
   });

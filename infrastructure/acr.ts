@@ -1,6 +1,5 @@
 import * as azure from "@pulumi/azure-native";
 import * as pulumi from "@pulumi/pulumi";
-import { createResource } from "../utils/utils";
 import { config } from "../config";
 import { getTags } from "../tags";
 
@@ -15,7 +14,7 @@ export function createACR(
   return new azure.containerregistry.Registry(name, {
     registryName: name,
     resourceGroupName: rg.name,
-    location: config.location,
+    location: config.locationShort,
 
     sku: { name: sku },
     tags: getTags(extraTags),
@@ -23,7 +22,7 @@ export function createACR(
 }
 
 export function acrName(uniqueId: string): string {
-  return `acr${uniqueId}${config.projectName}${config.environment}${config.location}`
+  return `acr${uniqueId}${config.projectName}${config.environment}${config.locationShort}`
     .replace(/[^a-zA-Z0-9]/g, "") // remove invalid chars
     .toLowerCase()
     .slice(0, 50); // ACR name max length is 50 chars

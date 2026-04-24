@@ -14,7 +14,7 @@ export function createStorageAccount(
     return new azure.storage.StorageAccount(name, {
       accountName: name,
       resourceGroupName: rg.name,
-      location: config.location,
+      location: config.locationShort,
 
       sku: {
         name: skuName,
