@@ -3,29 +3,28 @@ import * as pulumi from "@pulumi/pulumi";
 import { config } from "../config";
 import { getTags } from "../tags";
 
+import { createResource } from "../utils/utils";
+
 export function createACR(
-    rg: azure.resources.ResourceGroup, 
-    id: string, 
-    sku: azure.containerregistry.SkuName = "Basic", 
-    extraTags?: Record<string, string>
+  rg: azure.resources.ResourceGroup,
+  id: string,
+  sku: azure.containerregistry.SkuName = "Basic",
+  extraTags?: Record<string, string>
 ): azure.containerregistry.Registry {
-  const name = acrName(id);
 
-  return new azure.containerregistry.Registry(name, {
-    registryName: name,
-    resourceGroupName: rg.name,
-    location: config.locationShort,
+  return createResource(
+    "acr",
+    id,
+    { mode: "strict", maxLength: 50 },
+    (name) => new azure.containerregistry.Registry(name, {
+      registryName: name,
+      resourceGroupName: rg.name,
+      location: config.locationShort,
 
-    sku: { name: sku },
-    tags: getTags(extraTags),
-  });
-}
-
-export function acrName(uniqueId: string): string {
-  return `acr${uniqueId}${config.projectName}${config.environment}${config.locationShort}`
-    .replace(/[^a-zA-Z0-9]/g, "") // remove invalid chars
-    .toLowerCase()
-    .slice(0, 50); // ACR name max length is 50 chars
+      sku: { name: sku },
+      tags: getTags(extraTags),
+    })
+  );
 }
 
 export function grantAcrPullToAks(

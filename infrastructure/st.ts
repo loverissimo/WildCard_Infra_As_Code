@@ -10,8 +10,11 @@ export function createStorageAccount(
   extraTags?: Record<string, string>
 ): azure.storage.StorageAccount {
 
-  return createResource("st", id, (name) => {
-    return new azure.storage.StorageAccount(name, {
+  return createResource(
+    "st",
+    id,
+    { mode: "strict", maxLength: 24 },
+    (name) => new azure.storage.StorageAccount(name, {
       accountName: name,
       resourceGroupName: rg.name,
       location: config.locationShort,
@@ -21,10 +24,9 @@ export function createStorageAccount(
       },
 
       kind: "StorageV2",
-
       tags: getTags(extraTags),
-    });
-  });
+    })
+  );
 }
 
 export function createBlobContainer(
@@ -33,12 +35,14 @@ export function createBlobContainer(
   id: string
 ): azure.storage.BlobContainer {
 
-  return createResource("blob", id, (name) => {
-    return new azure.storage.BlobContainer(name, {
+  return createResource(
+    "blob",
+    id,
+    {}, // default mode
+    (name) => new azure.storage.BlobContainer(name, {
       accountName: storage.name,
       resourceGroupName: rg.name,
-
       publicAccess: azure.storage.PublicAccess.None,
-    });
-  });
+    })
+  );
 }
