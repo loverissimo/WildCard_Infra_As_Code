@@ -8,11 +8,14 @@ export function createResourceGroup(
   extraTags?: Record<string, string>
 ): azure.resources.ResourceGroup {
 
-  return createResource("rg", id, (name) => {
-    return new azure.resources.ResourceGroup(name, {
+  return createResource(
+    "rg",
+    id,
+    {}, // default naming
+    (name) => new azure.resources.ResourceGroup(name, {
       resourceGroupName: name,
       location: config.locationShort,
       tags: getTags(extraTags),
-    });
-  });
+    })
+  );
 }
