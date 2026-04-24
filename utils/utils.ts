@@ -2,12 +2,12 @@ import { config } from "../config";
 
 // Default: most Azure resources
 export function resourceName(resourceType: string, id: string): string {
-  return `${resourceType}-${id}-${config.projectName}-${config.environment}-${config.locationShort}`;
+  return `${resourceType}-${id}-${config.projectName}-${config.environment}-${config.location_short}`;
 }
 
 // Strict: Storage, ACR, etc.
 export function strictResourceName(prefix: string, id: string, maxLength: number): string {
-  return `${prefix}${id}${config.projectName}${config.environment}${config.locationShort}`
+  return `${prefix}${id}${config.projectName}${config.environment}${config.location_short}`
     .replace(/[^a-zA-Z0-9]/g, "")
     .toLowerCase()
     .slice(0, maxLength);
