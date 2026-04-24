@@ -19,7 +19,7 @@ export function createACR(
     (name) => new azure.containerregistry.Registry(name, {
       registryName: name,
       resourceGroupName: rg.name,
-      location: config.locationShort,
+      location: config.location,
 
       sku: { name: sku },
       tags: getTags(extraTags),
