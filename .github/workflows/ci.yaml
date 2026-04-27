@@ -68,7 +68,7 @@ jobs:
     name: Manual Approval + Deploy
     runs-on: ubuntu-latest
     needs: preview
-    environment: deployment-approval
+    environment: run-approval
 
     steps:
       - name: Checkout repo
