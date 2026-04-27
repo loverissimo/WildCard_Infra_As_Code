@@ -64,7 +64,7 @@ jobs:
 
     if: ${{ github.event.inputs.action == 'deploy' }}
 
-    environment: run-approval
+    environment: action-approval
 
     steps:
       - name: Checkout repo
@@ -103,7 +103,7 @@ jobs:
 
     if: ${{ github.event.inputs.action == 'destroy' }}
 
-    environment: run-approval
+    environment: action-approval
 
     steps:
       - name: Checkout repo
