@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment (dev or prod)"
+        description: "Environment"
         required: true
         default: "dev"
         type: choice
@@ -13,7 +13,7 @@ on:
           - prod
 
       action:
-        description: "Action (deploy or destroy)"
+        description: "Action"
         required: true
         default: "deploy"
         type: choice
@@ -64,7 +64,7 @@ jobs:
 
     if: ${{ github.event.inputs.action == 'deploy' }}
 
-    environment: run-approval
+    environment: action-approval
 
     steps:
       - name: Checkout repo
@@ -103,7 +103,7 @@ jobs:
 
     if: ${{ github.event.inputs.action == 'destroy' }}
 
-    environment: run-approval
+    environment: action-approval
 
     steps:
       - name: Checkout repo
