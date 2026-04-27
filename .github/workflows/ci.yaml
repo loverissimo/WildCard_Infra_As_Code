@@ -1,4 +1,4 @@
-name: WildCard Infra Deploy
+name: WildCard Infra as Code CI/CD
 
 on:
   workflow_dispatch:
