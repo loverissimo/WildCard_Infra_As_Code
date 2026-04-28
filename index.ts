@@ -10,7 +10,7 @@ const rg = createResourceGroup("main");
 const acr = createACR(rg, "main", "Basic");
 
 // AKS
-const aks = createAKS(rg, "main");
+const aks = createAKS(rg, "main", acr);
 
 // AKS → ACR (pull access)
 grantAcrPullToAks("main", aks, acr);
