@@ -10,7 +10,11 @@ export function createAKS(
 ) {
   const policy = getAksPolicy();
 
-  const cluster = createResource("aks", id, (name) => {
+  const cluster = createResource(
+  "aks",
+  id,
+  { mode: "default" },
+  (name) => {
     return new azure.containerservice.ManagedCluster(name, {
       resourceGroupName: rg.name,
       location: config.location,
@@ -20,10 +24,7 @@ export function createAKS(
 
       identity: { type: "SystemAssigned" },
 
-      sku: {
-        name: "Basic",
-        tier: "Free",
-      },
+      sku: policy.sku,
 
       agentPoolProfiles: [
         {
@@ -43,7 +44,8 @@ export function createAKS(
 
       tags: getTags(extraTags),
     });
-  });
+   }
+ );
 }
 
 export function getAksPolicy() {
@@ -53,6 +55,10 @@ export function getAksPolicy() {
         nodeCount: 3,
         vmSize: "Standard_D2s_v3",
         k8sVersion: "1.29.0",
+        sku: {
+          name: "Standard",
+          tier: "Paid",
+        },
       };
 
     default:
@@ -60,6 +66,10 @@ export function getAksPolicy() {
         nodeCount: 1,
         vmSize: "Standard_B2s",
         k8sVersion: "1.29.0",
+        sku: {
+          name: "Basic",
+          tier: "Free",
+        },
       };
   }
 }
