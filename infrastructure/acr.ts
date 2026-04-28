@@ -32,14 +32,18 @@ export function grantAcrPullToAks(
   cluster: azure.containerservice.ManagedCluster,
   acr: azure.containerregistry.Registry
 ) {
+ const principalId = cluster.identityProfile.apply(p =>
+  p?.kubeletidentity?.objectId ?? p?.kubeletidentity?.clientId
+);
+
   return new azure.authorization.RoleAssignment(`${id}-acr-pull`, {
     scope: acr.id,
 
-    roleDefinitionId: `/subscriptions/${config.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d`,
+    roleDefinitionId:
+      `/subscriptions/${config.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d`,
 
-    principalId: cluster.identityProfile.apply(
-      (p: pulumi.Unwrap<typeof cluster.identityProfile>) =>
-      p?.kubeletidentity?.objectId!
-    ),
+    principalId: principalId,
+  }, {
+    dependsOn: [cluster],
   });
 }
