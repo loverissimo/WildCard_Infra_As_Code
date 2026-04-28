@@ -22,4 +22,4 @@ const sta = createStorageAccount(rg, "main", "Standard_LRS");
 const blob = createBlobContainer(sta, rg, "main");
 
 // File Share
-const fileShare = createFileShare(sta, rg, "main");
+const fileShare = createFileShare(sta, rg, "cli");
