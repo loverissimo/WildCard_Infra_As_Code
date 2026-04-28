@@ -49,6 +49,7 @@ export function grantAcrPullToAks(
     roleDefinitionId:
       `/subscriptions/${config.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d`,
     principalId,
+    principalType: "ServicePrincipal",
   }, {
     dependsOn: [cluster],
   });
