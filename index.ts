@@ -9,11 +9,11 @@ const rg = createResourceGroup("main");
 // ACR
 const acr = createACR(rg, "main", "Basic");
 
-// // AKS
-// const aks = createAKS(rg, "main");
+// AKS
+const aks = createAKS(rg, "main");
 
-// // AKS → ACR (pull access)
-// grantAcrPullToAks("main", aks, acr);
+// AKS → ACR (pull access)
+grantAcrPullToAks("main", aks, acr);
 
 // Storage Account
 const sta = createStorageAccount(rg, "main", "Standard_LRS");
