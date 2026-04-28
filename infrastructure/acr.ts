@@ -15,7 +15,7 @@ export function createACR(
   return createResource(
     "acr",
     id,
-    { mode: "strict", maxLength: 50 },
+    { mode: "strict"},
     (name) => new azure.containerregistry.Registry(name, {
       registryName: name,
       resourceGroupName: rg.name,

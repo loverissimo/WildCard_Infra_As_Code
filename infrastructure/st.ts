@@ -13,7 +13,7 @@ export function createStorageAccount(
   return createResource(
     "st",
     id,
-    { mode: "strict", maxLength: 24 },
+    { mode: "strict"},
     (name) => new azure.storage.StorageAccount(name, {
       accountName: name,
       resourceGroupName: rg.name,
@@ -44,5 +44,26 @@ export function createBlobContainer(
       resourceGroupName: rg.name,
       publicAccess: azure.storage.PublicAccess.None,
     })
+  );
+}
+
+export function createFileShare(
+  storage: azure.storage.StorageAccount,
+  rg: azure.resources.ResourceGroup,
+  id: string,
+  quotaGb: number = 5
+): azure.storage.FileShare {
+
+  return createResource(
+    "share",
+    id,
+    { mode: "strict" },
+    (name) =>
+      new azure.storage.FileShare(name, {
+        accountName: storage.name,
+        shareName: name,
+        resourceGroupName: rg.name,
+        shareQuota: quotaGb,
+      })
   );
 }

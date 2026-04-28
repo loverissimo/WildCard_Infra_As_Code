@@ -13,7 +13,7 @@ export function createAKS(
   const cluster = createResource(
   "aks",
   id,
-  { mode: "default" },
+  {},
   (name) => {
     return new azure.containerservice.ManagedCluster(name, {
       resourceGroupName: rg.name,
