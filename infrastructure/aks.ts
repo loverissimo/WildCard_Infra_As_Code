@@ -46,7 +46,7 @@ export function createAKS(
     });
    }
  );
- 
+
  return cluster;
 }
 
@@ -69,7 +69,7 @@ export function getAksPolicy() {
         vmSize: "Standard_B2s",
         k8sVersion: "1.29.0",
         sku: {
-          name: "Basic",
+          name: "Base",
           tier: "Free",
         },
       };
