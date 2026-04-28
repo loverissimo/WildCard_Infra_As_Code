@@ -20,7 +20,6 @@ export function createAKS(
       location: config.location,
 
       dnsPrefix: `${name}-dns`,
-      kubernetesVersion: policy.k8sVersion,
 
       identity: { type: "SystemAssigned" },
 
@@ -56,7 +55,6 @@ export function getAksPolicy() {
       return {
         nodeCount: 3,
         vmSize: "Standard_D2s_v3",
-        k8sVersion: "1.29.0",
         sku: {
           name: "Standard",
           tier: "Paid",
@@ -67,7 +65,6 @@ export function getAksPolicy() {
       return {
         nodeCount: 1,
         vmSize: "Standard_B2s",
-        k8sVersion: "1.29.0",
         sku: {
           name: "Base",
           tier: "Free",
