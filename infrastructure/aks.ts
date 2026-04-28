@@ -46,6 +46,8 @@ export function createAKS(
     });
    }
  );
+ 
+ return cluster;
 }
 
 export function getAksPolicy() {
