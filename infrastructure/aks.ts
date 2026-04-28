@@ -56,7 +56,7 @@ export function getAksPolicy() {
         nodeCount: 3,
         vmSize: "Standard_D4s_v5",
         sku: {
-          name: "Standard",
+          name: "Base",
           tier: "Paid",
         },
       };
@@ -64,7 +64,7 @@ export function getAksPolicy() {
     default:
       return {
         nodeCount: 1,
-        vmSize: "Standard_D2s_v5",
+        vmSize: "Standard_D2s_v3",
         sku: {
           name: "Base",
           tier: "Free",
