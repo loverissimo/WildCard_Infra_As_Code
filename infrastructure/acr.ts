@@ -32,25 +32,26 @@ export function grantAcrPullToAks(
   cluster: azure.containerservice.ManagedCluster,
   acr: azure.containerregistry.Registry
 ) {
-  const principalId = cluster.identityProfile.apply(
-    (p: any) => {
-      const kubeletClientId = p?.kubeletidentity?.clientId;
+  const principalId = cluster.identityProfile.apply((profile: any) => {
+    const kubeletClientId = profile?.kubeletidentity?.clientId;
 
-      if (!kubeletClientId) {
-        throw new Error("AKS kubelet identity clientId not available yet");
-      }
-
-      return kubeletClientId;
+    if (!kubeletClientId) {
+      throw new Error("AKS kubelet identity clientId not available yet");
     }
-  );
+
+    return kubeletClientId;
+  });
 
   return new azure.authorization.RoleAssignment(`${id}-acr-pull`, {
     scope: acr.id,
+
     roleDefinitionId:
       `/subscriptions/${config.subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d`,
+
     principalId,
+
     principalType: "ServicePrincipal",
   }, {
-    dependsOn: [cluster],
+    dependsOn: [cluster, acr],
   });
 }

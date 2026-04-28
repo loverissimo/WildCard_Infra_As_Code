@@ -6,57 +6,47 @@ import { getTags } from "../tags";
 export function createAKS(
   rg: azure.resources.ResourceGroup,
   id: string,
-  acr?: azure.containerregistry.Registry,
   extraTags?: Record<string, string>
 ) {
   const policy = getAksPolicy();
 
   const cluster = createResource(
-    "aks",
-    id,
-    { mode: "default" },
-    (name) => {
-      return new azure.containerservice.ManagedCluster(name, {
-        resourceGroupName: rg.name,
-        location: config.location,
+  "aks",
+  id,
+  { mode: "default" },
+  (name) => {
+    return new azure.containerservice.ManagedCluster(name, {
+      resourceGroupName: rg.name,
+      location: config.location,
 
-        dnsPrefix: `${name}-dns`,
+      dnsPrefix: `${name}-dns`,
 
-        identity: { type: "SystemAssigned" },
+      identity: { type: "SystemAssigned" },
 
-        sku: policy.sku,
+      sku: policy.sku,
 
-        agentPoolProfiles: [
-          {
-            name: "systempool",
-            count: policy.nodeCount,
-            vmSize: policy.vmSize,
-            mode: "System",
-            osType: "Linux",
-            type: "VirtualMachineScaleSets",
-          },
-        ],
-
-        acrProfiles: acr
-          ? [
-              {
-                name: acr.name,
-                resourceGroup: rg.name,
-              },
-            ]
-          : undefined,
-
-        networkProfile: {
-          networkPlugin: "azure",
-          loadBalancerSku: "standard",
+      agentPoolProfiles: [
+        {
+          name: "systempool",
+          count: policy.nodeCount,
+          vmSize: policy.vmSize,
+          mode: "System",
+          osType: "Linux",
+          type: "VirtualMachineScaleSets",
         },
+      ],
 
-        tags: getTags(extraTags),
-      });
-    }
-  );
+      networkProfile: {
+        networkPlugin: "azure",
+        loadBalancerSku: "standard",
+      },
 
-  return cluster;
+      tags: getTags(extraTags),
+    });
+   }
+ );
+
+ return cluster;
 }
 
 export function getAksPolicy() {
